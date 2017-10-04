@@ -1,11 +1,12 @@
 import org.scalatest.FunSuite
+import org.scalatest.MustMatchers
 import org.scalatest.concurrent.TimeLimitedTests
 import org.scalatest.time.Minutes
 import org.scalatest.time.Span
 
 import scala.io.Source
 
-class EulerSpec extends FunSuite with TimeLimitedTests {
+class EulerSpec extends FunSuite with TimeLimitedTests with MustMatchers {
   val timeLimit = Span(1, Minutes)  // enforce one-minute rule
 
   /**
@@ -51,19 +52,19 @@ class EulerSpec extends FunSuite with TimeLimitedTests {
    * logarithmic base, it was easy to proceed.
    */
   test("Project Euler Problem 99") {
-    val (_, lineNumber) = Source
-      .fromResource("p099_base_exp.txt")
-      .getLines
-      .zipWithIndex  // add in line numbers
-      .map { case (line, lineNumber) =>
-        val Array(mantissa, exponent) = line.split(",").take(2)
-        (exponent.toDouble * math.log(mantissa.toDouble), lineNumber)
-      }
-      .maxBy { case (result, lineNumber) =>
-        result
-      }
+    val (_, lineNumber) =
+      Source
+        .fromResource("p099_base_exp.txt")
+        .getLines
+        .zipWithIndex
+        .map { case (line, i) => (line, i + 1) } // line numbering starts at 1
+        .map { case (line, lineNumber) =>
+          val Array(mantissa, exponent) = line.split(",").take(2)
+          (exponent.toDouble * math.log(mantissa.toDouble), lineNumber)
+        }
+        .maxBy { case (result, lineNumber) => result }
 
-    println(s"Problem 99: Largest number is on line '${lineNumber + 1}'")
+    lineNumber.must(be(709))
   }
 
   /**

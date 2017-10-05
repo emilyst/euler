@@ -5,7 +5,6 @@ import org.scalatest.time.Minutes
 import org.scalatest.time.Span
 
 import scala.io.Source
-import scala.math.BigInt
 
 class EulerSpec extends FunSuite with TimeLimitedTests with MustMatchers {
   val timeLimit = Span(1, Minutes)  // enforce one-minute rule
@@ -108,7 +107,7 @@ class EulerSpec extends FunSuite with TimeLimitedTests with MustMatchers {
     // this is crude but it's fast -- determines if a number has the
     // form described in the problem by isolating each digit and testing
     // it separately; I use constants where possible for performance
-    def resembles_1_2_3_4_5_6_7_8_9_0(candidate: BigInt): Boolean = {
+    def resembles_1_2_3_4_5_6_7_8_9_0(candidate: Long): Boolean = {
       candidate % 10                        == 0 &&
       candidate / 100 % 10                  == 9 &&
       candidate / 10000 % 10                == 8 &&
@@ -121,23 +120,28 @@ class EulerSpec extends FunSuite with TimeLimitedTests with MustMatchers {
       candidate / 1000000000000000000L % 10 == 1
     }
 
-    // similar trick
-    def ends_in_30(candidate: BigInt): Boolean = {
-      candidate % 100 == 30
-    }
-
     resembles_1_2_3_4_5_6_7_8_9_0(1020304050607080900L).must(be(true))
     resembles_1_2_3_4_5_6_7_8_9_0(1929394959697989990L).must(be(true))
     resembles_1_2_3_4_5_6_7_8_9_0(1234567890).must(be(false))
     resembles_1_2_3_4_5_6_7_8_9_0(1929394959697989999L).must(be(false))
+
+    // similar trick
+    def ends_in_30(candidate: Long): Boolean = {
+      candidate % 100 == 30
+    }
 
     ends_in_30(123123930).must(be(true))
     ends_in_30(4504530).must(be(true))
     ends_in_30(4504560).must(be(false))
     ends_in_30(4504533).must(be(false))
 
-    var candidate = BigInt(1000000030)
-    while(!resembles_1_2_3_4_5_6_7_8_9_0(candidate.pow(2))) {
+    // begin with a candidate that ends in 30 (the solution will end
+    // with either 30 or 70 because the square will end in 900) and is
+    // 10 digits long (because its square is in the neighborhood of
+    // 1e18)
+    var candidate = 1000000030L
+
+    while(!resembles_1_2_3_4_5_6_7_8_9_0(candidate * candidate)) {
       // count up by 40s or 60s so all squares end in 900, reduces the
       // size of the search space
       if (ends_in_30(candidate)) {

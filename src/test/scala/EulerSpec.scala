@@ -212,5 +212,7 @@ class EulerSpec extends FunSuite with TimeLimitedTests with MustMatchers {
    *      equals a prime number. (I'll call this the strong Harshad
    *      property.)
    */
-  test("Project Euler Problem 387: Harshad Numbers") { }
+  test("Project Euler Problem 387: Harshad Numbers") { 
+    fail("not implemented")
+  }
 }

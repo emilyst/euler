@@ -51,7 +51,7 @@ class EulerSpec extends FunSuite with TimeLimitedTests with MustMatchers {
    * Once I cleared up my own misconception about the (ir)relevance of the
    * logarithmic base, it was easy to proceed.
    */
-  test("Project Euler Problem 99") {
+  test("Project Euler Problem 99: Largest exponential") {
     val (_, lineNumber) =
       Source
         .fromResource("p099_base_exp.txt")
@@ -103,7 +103,7 @@ class EulerSpec extends FunSuite with TimeLimitedTests with MustMatchers {
    * It's sort of crude. Solves in about seven seconds on my computer.
    * Not sure if there's room for improvement with the brute-forcing.
    */
-  test("Project Euler Problem 206") {
+  test("Project Euler Problem 206: Concealed Square") {
     // this is crude but it's fast -- determines if a number has the
     // form described in the problem by isolating each digit and testing
     // it separately; I use constants where possible for performance
@@ -153,4 +153,64 @@ class EulerSpec extends FunSuite with TimeLimitedTests with MustMatchers {
 
     candidate.must(be(1389019170))
   }
+
+
+  /**
+   * > A Harshad or Niven number is a number that is divisible by the
+   * > sum of its digits. 201 is a Harshad number because it is
+   * > divisible by 3 (the sum of its digits.) When we truncate the last
+   * > digit from 201, we get 20, which is a Harshad number. When we
+   * > truncate the last digit from 20, we get 2, which is also a
+   * > Harshad number. Let's call a Harshad number that, while
+   * > recursively truncating the last digit, always results in a
+   * > Harshad number a right truncatable Harshad number.
+   *
+   * > Also: 201/3=67 which is prime. Let's call a Harshad number that,
+   * > when divided by the sum of its digits, results in a prime a
+   * > strong Harshad number.
+   *
+   * > Now take the number 2011 which is prime. When we truncate the
+   * > last digit from it we get 201, a strong Harshad number that is
+   * > also right truncatable. Let's call such primes strong, right
+   * > truncatable Harshad primes.
+   *
+   * > You are given that the sum of the strong, right truncatable
+   * > Harshad primes less than 10000 is 90619.
+   *
+   * > Find the sum of the strong, right truncatable Harshad primes less
+   * > than 10^14.
+   *
+   * Oh, boy.
+   *
+   * Well, let's look at one interesting fact right away. Any
+   * single-digit number appears to be its own Harshad number. Not sure
+   * how useful this identity will be, though.
+   *
+   * I'm first of all assuming that this problem confines itself to
+   * positive integers. Now, we're only interested in those primes which
+   * exist between 1 and 10^14, so the first job will be to find all of
+   * those using an algorithm like the Sieve of Eratosthenes.
+   *
+   * It may make sense to store a subset of these of these primes off so
+   * that later we can quickly check whether a number is prime again
+   * later. (In thinking about it, I won't need to check for a prime any
+   * bigger than the digits of 10^14-1 added up, which is
+   * 99,999,999,999,999, or 126. So I guess that's not really a big
+   * deal.)
+   *
+   * To determine whether to add a given prime I've found to the total,
+   * it will be necessary to truncate the last digit of that prime and
+   * then see if the following conditions hold for the integer which
+   * results.
+   *
+   *   1. The number itself is equal to the sum of its digits (I'll call
+   *      this the Harshad property).
+   *   2. Each time a digit is truncated from the number's right, the
+   *      Harshad property holds. (I'll call this the truncatable
+   *      Harshad property.)
+   *   3. The number itself, when divided by the sum of its digits,
+   *      equals a prime number. (I'll call this the strong Harshad
+   *      property.)
+   */
+  test("Project Euler Problem 387: Harshad Numbers") { }
 }
